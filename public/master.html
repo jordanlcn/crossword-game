@@ -2,7 +2,7 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Game Master - Tamtech WEM Crossword</title><link rel="stylesheet" href="style.css"></head>
 <body>
-<div class="topbar"><b>Game Master</b><span class="who" id="who"></span><div class="grow"></div>
+<div class="topbar"><img class="logo" src="five9-logo-white.svg" alt="Five9"><b>Game Master</b><span class="who" id="who"></span><div class="grow"></div>
   <span id="roomtag"></span><button class="sec" id="out">Log out</button></div>
 
 <div id="lobby" class="wrap">
@@ -15,7 +15,7 @@
   <div class="wrap" style="padding-bottom:0">
     <div class="row"><button class="sec" id="back">← All rooms</button>
       <span>Room code <span class="big" id="code"></span></span><span class="pill" id="status"></span>
-      <span>Game time: <b id="gt" style="font-family:Consolas,monospace">00:00:00</b></span>
+      <span>Game time: <b id="gt">00:00:00</b></span>
       <div class="grow" style="flex:1"></div>
       <button id="results" class="sec" hidden>View results</button><button id="dl" hidden>Download Excel</button>
       <button class="danger" id="end">End game for everyone</button></div>
@@ -41,7 +41,7 @@ async function loadRooms() {
   const list = await api('/api/rooms', { token: me.token });
   $('#rooms').innerHTML = ''; $('#none').hidden = list.length > 0;
   list.forEach((r) => $('#rooms').append(el('tr', {},
-    el('td', { innerHTML: `<b style="font-family:Consolas,monospace;font-size:1.1rem">${r.code}</b>` }),
+    el('td', { innerHTML: `<b style="font-size:1.1rem">${r.code}</b>` }),
     el('td', {}, el('span', { className: 'pill ' + r.status, textContent: r.status === 'open' ? 'Active' : 'Ended' })),
     el('td', { textContent: new Date(r.createdAt).toLocaleString() }),
     el('td', { textContent: `${r.teamsJoined}/8 (${r.teamsOnline} online)` }),

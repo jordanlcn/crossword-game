@@ -2,7 +2,7 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Overseer - Tamtech WEM Crossword</title><link rel="stylesheet" href="style.css"></head>
 <body>
-<div class="topbar"><b>Overseer</b><span class="who" id="who"></span><div class="grow"></div><span id="crumb"></span><button class="sec" id="out">Log out</button></div>
+<div class="topbar"><img class="logo" src="five9-logo-white.svg" alt="Five9"><b>Overseer</b><span class="who" id="who"></span><div class="grow"></div><span id="crumb"></span><button class="sec" id="out">Log out</button></div>
 
 <div id="rooms" class="wrap"><h2>Active game rooms</h2>
   <div class="panel"><table><thead><tr><th>Room code</th><th>Teams online</th><th></th></tr></thead><tbody id="rb"></tbody></table>
@@ -39,7 +39,7 @@ async function loadRooms() {
   const list = await api('/api/rooms', { token: me.token });
   $('#rb').innerHTML = ''; $('#none').hidden = list.length > 0;
   list.forEach((r) => $('#rb').append(el('tr', {},
-    el('td', { innerHTML: `<b style="font-family:Consolas,monospace;font-size:1.1rem">${r.code}</b>` }),
+    el('td', { innerHTML: `<b style="font-size:1.1rem">${r.code}</b>` }),
     el('td', { textContent: `${r.teamsOnline} online / ${r.teamsJoined} joined` }),
     el('td', {}, el('button', { textContent: 'Select room', onclick: () => openRoom(r.code) })))));
 }

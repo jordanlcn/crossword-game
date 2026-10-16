@@ -2,7 +2,7 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Tamtech WEM Crossword</title><link rel="stylesheet" href="style.css"></head>
 <body><div class="center"><form class="card" id="f">
-  <h1>Tamtech WEM Crossword</h1>
+  <img class="logo" src="five9-logo-blue.svg" alt="Five9"><div class="eyebrow">Tamtech WEM</div><h1>Crossword challenge</h1>
   <p class="muted">Enter your details and the 6-digit room code from your Game Master.</p>
   <label for="name">Player name</label><input id="name" maxlength="30" required autocomplete="off">
   <label for="team">Team</label><select id="team" required><option value="">Select your team…</option></select>
@@ -10,7 +10,7 @@
   <div class="err" id="err"></div>
   <button style="width:100%;margin-top:.4rem">Join game</button>
   <a class="link" href="staff.html">Game Master / Overseer login</a>
-</form></div>
+<div class="themeline">Smarter CX <span>with every interaction</span></div></form></div>
 <script src="common.js"></script>
 <script>
 api('/api/teams').then((ts) => ts.forEach((t) => $('#team').append(el('option', { value: t.name, textContent: t.label }))));
