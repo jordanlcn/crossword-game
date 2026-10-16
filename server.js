@@ -116,6 +116,7 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.get('/healthz', (req, res) => res.send('ok'));
 app.get('/api/teams', (req, res) => res.json(TEAMS));
 
 app.post('/api/staff/login', (req, res) => {
@@ -253,6 +254,9 @@ wss.on('connection', (ws, req) => {
   const room = code && db.rooms[code];
   if (!sess || !room) return ws.close(4001, 'auth');
 
+  ws.on('error', (e) => console.error('ws error', e.message));
+  ws.isAlive = true;
+  ws.on('pong', () => { ws.isAlive = true; });
   const conn = { ws, role: sess.role, team: sess.team || null };
 
   if (sess.role === 'player') {
@@ -316,5 +320,15 @@ wss.on('connection', (ws, req) => {
     ws.on('close', () => roomConns(code).delete(conn));
   }
 });
+
+// Drop half-open sockets so a closed tab/lost network shows as offline promptly.
+setInterval(() => {
+  wss.clients.forEach((c) => { if (!c.isAlive) return c.terminate(); c.isAlive = false; c.ping(); });
+}, 20000);
+
+// Never let one bad request or socket take the whole game down.
+process.on('uncaughtException', (e) => console.error('uncaught', e));
+process.on('unhandledRejection', (e) => console.error('unhandled', e));
+app.use((err, req, res, next) => { console.error(err.message); res.status(err.status || 500).json({ error: 'Bad request' }); });
 
 server.listen(PORT, () => console.log(`Crossword server on http://localhost:${PORT}`));
