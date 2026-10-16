@@ -90,7 +90,7 @@ function showEntries(found, cellKey) {
     e.hints.forEach((h) => box.append(el('div', { className: 'hint' }, el('div', { className: 'l', textContent: h.label }), el('div', { textContent: h.text }))));
   });
   grid.highlight(found[0].id, cellKey);
-  clues.active(found[0].id);
+  $('.side').scrollTop = 0; // keep the Hints panel in view; never jump down to the answer sheet
 }
 function onGridClick(k) {
   const found = grid.cells.get(k).entries.map((id) => grid.byId.get(id)).sort((a, b) => (a.dir < b.dir ? -1 : 1));
