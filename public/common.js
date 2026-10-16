@@ -19,7 +19,12 @@ async function api(path, { method = 'GET', body, token } = {}) {
     body: body ? JSON.stringify(body) : undefined,
   });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw Object.assign(new Error(data.error || 'Request failed'), { status: res.status });
+  if (!res.ok) {
+    const msg = data.error || (res.status >= 500 || res.status === 404
+      ? `The game server did not respond correctly (HTTP ${res.status}). If the site was just updated or is waking up, wait a minute and try again.`
+      : `Request failed (HTTP ${res.status})`);
+    throw Object.assign(new Error(msg), { status: res.status });
+  }
   return data;
 }
 
