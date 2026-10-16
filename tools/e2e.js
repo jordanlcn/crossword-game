@@ -51,14 +51,25 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   assert.strictEqual(p1.msgs.filter((m) => m.t === 'result' && m.ok).length, 1);
   assert.ok(ov.msgs.some((m) => m.t === 'solved' && m.team === 'Task Masters' && m.score === 1), 'overseer sees live score');
 
+  // Rejoin rules: others locked out; same name blocked while connected; resume token works; same name ok once offline.
+  assert.strictEqual((await post('/api/player/join', { name: 'Ann', team: 'Task Masters', code: room.code })).status, 409);
+  const rs = await post('/api/player/resume', {}, a.body.token);
+  assert.strictEqual(rs.status, 200);
+  p1.ws.close(); await wait(300);
+  assert.strictEqual((await post('/api/player/join', { name: 'Bob', team: 'Task Masters', code: room.code })).status, 409);
+  const again = await post('/api/player/join', { name: 'ann', team: 'Task Masters', code: room.code });
+  assert.strictEqual(again.status, 200);
+  assert.strictEqual((await post('/api/player/resume', {}, a.body.token)).status, 401, 'old token invalid after rejoin');
+  const p1b = await wsOpen('token=' + again.body.token); await wait(200);
+  assert.strictEqual(p1b.msgs.find((m) => m.t === 'init').score, 1, 'progress kept on rejoin');
   assert.strictEqual((await post(`/api/rooms/${room.code}/end`, { terminationCode: '1234' }, master.token)).status, 403);
   assert.strictEqual((await post(`/api/rooms/${room.code}/end`, { terminationCode: '5959' }, over.token)).status, 401);
-  const r0 = await fetch(`${base}/api/rooms/${room.code}/results`, { headers: { Authorization: 'Bearer ' + a.body.token } });
+  const r0 = await fetch(`${base}/api/rooms/${room.code}/results`, { headers: { Authorization: 'Bearer ' + again.body.token } });
   assert.strictEqual(r0.status, 403, 'players cannot see results mid-game');
   assert.strictEqual((await post(`/api/rooms/${room.code}/end`, { terminationCode: '5959' }, master.token)).status, 200);
   await wait(200);
-  assert.ok(p1.msgs.some((m) => m.t === 'ended') && p2.msgs.some((m) => m.t === 'ended'));
-  const r = await (await fetch(`${base}/api/rooms/${room.code}/results`, { headers: { Authorization: 'Bearer ' + a.body.token } })).json();
+  assert.ok(p1b.msgs.some((m) => m.t === 'ended') && p2.msgs.some((m) => m.t === 'ended'));
+  const r = await (await fetch(`${base}/api/rooms/${room.code}/results`, { headers: { Authorization: 'Bearer ' + again.body.token } })).json();
   console.log(r.rows.slice(0, 3).map((x) => `${x.rank} ${x.team} ${x.points} ${x.timeMs}`), 'total', r.totalGameMs);
   const x = await fetch(`${base}/api/rooms/${room.code}/export`, { headers: { Authorization: 'Bearer ' + master.token } });
   assert.strictEqual(x.status, 200);

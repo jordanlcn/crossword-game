@@ -24,13 +24,15 @@ async function api(path, { method = 'GET', body, token } = {}) {
 }
 
 // WebSocket with auto-reconnect. onMessage(msg); onAuthFail() when the server rejects the token.
-function connect(query, onMessage, onAuthFail) {
+function connect(query, onMessage, onAuthFail, onStatus) {
   let stop = false, cur = null;
   function open() {
     const ws = cur = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws?${query}`);
+    ws.onopen = () => onStatus && onStatus(true);
     ws.onmessage = (e) => onMessage(JSON.parse(e.data), ws);
     ws.onclose = (e) => {
       if (stop) return;
+      if (onStatus && e.code !== 4001 && e.code !== 4002) onStatus(false);
       if (e.code === 4001) return onAuthFail && onAuthFail();
       if (e.code === 4002) return;
       setTimeout(open, 2000);

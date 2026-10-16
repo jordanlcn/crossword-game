@@ -151,12 +151,26 @@ app.post('/api/player/join', (req, res) => {
   if (t && t.player.toLowerCase() !== name.toLowerCase()) {
     return res.status(409).json({ error: `${teamName} already has a player (${t.player}) in this room. Only one player per team is allowed.` });
   }
+  // Name-only rejoin (no saved device token) is refused while the original player is still connected.
+  if (t && isOnline(code, teamName)) {
+    return res.status(409).json({ error: `${t.player} is currently connected on ${teamName}. If that is you, use the Resume button on the device you started with.` });
+  }
   if (!t) t = room.teams[teamName] = { player: name, startedAt: null, lastCorrectAt: null, cells: {}, solved: {}, token: null };
   if (t.token) delete db.sessions[t.token];
   t.token = newToken();
   db.sessions[t.token] = { role: 'player', name: t.player, room: code, team: teamName };
   save();
   res.json({ token: t.token, code, team: teamName, name: t.player });
+});
+
+// One-click rejoin from the device the player started on (their saved token).
+app.post('/api/player/resume', (req, res) => {
+  const a = auth(req);
+  const room = a && a.role === 'player' && db.rooms[a.room];
+  const t = room && room.teams[a.team];
+  if (!t || t.token !== a.token) return res.status(401).json({ error: 'Session expired.' });
+  if (room.status === 'ended') return res.status(410).json({ error: 'This game has already ended.', code: room.code });
+  res.json({ token: a.token, code: room.code, team: a.team, name: t.player });
 });
 
 app.get('/api/rooms', needStaff(), (req, res) => {

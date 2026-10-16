@@ -4,6 +4,7 @@
 <body><div class="center"><form class="card" id="f">
   <img class="logo" src="five9-logo-blue.svg" alt="Five9"><div class="eyebrow">Tamtech WEM</div><h1>Crossword challenge</h1>
   <p class="muted">Enter your name and the 6-digit room code from your Game Master, then pick your team.</p>
+  <div id="resume" hidden style="background:var(--s300);border-radius:8px;padding:.8rem;margin-top:.8rem"><div class="muted" id="rinfo"></div><button type="button" id="rbtn" style="width:100%;margin-top:.5rem">Resume game</button></div>
   <label for="name">Player name</label><input id="name" maxlength="30" required autocomplete="off">
   <label for="code">Game room code</label><input id="code" inputmode="numeric" pattern="\d{6}" maxlength="6" placeholder="6 digits" required autocomplete="off">
   <label for="team">Team</label><select id="team" required disabled><option value="">Enter the room code first…</option></select>
@@ -14,6 +15,15 @@
 <script src="common.js"></script>
 <script>
 let roomTeams = null, lastCode = '';
+// Easy rejoin: prefill the last name/code, and offer one-click Resume if this device still has a live session.
+const last = JSON.parse(localStorage.getItem('xw_last') || 'null');
+if (last) { $('#name').value = last.name; $('#code').value = last.code; }
+const saved = JSON.parse(localStorage.getItem('xw_player') || 'null');
+if (saved) api('/api/player/resume', { method: 'POST', token: saved.token }).then((r) => {
+  $('#rinfo').textContent = `Welcome back, ${r.name}! You are still in room ${r.code} as ${r.team}.`;
+  $('#resume').hidden = false;
+  $('#rbtn').onclick = () => { localStorage.setItem('xw_player', JSON.stringify(r)); location.href = 'play.html'; };
+}).catch((x) => { if (x.status === 401 || x.status === 410) localStorage.removeItem('xw_player'); });
 const strike = (s) => [...s].map((c) => (c === ' ' ? c : c + '̶')).join('');
 
 function renderTeams() {
@@ -45,6 +55,7 @@ async function loadTeams() {
   catch (x) { roomTeams = null; if (code === $('#code').value) $('#err').textContent = x.message; }
   renderTeams();
 }
+if ($('#code').value.length === 6) loadTeams();
 $('#code').oninput = (e) => { e.target.value = e.target.value.replace(/\D/g, ''); loadTeams(); };
 $('#name').oninput = () => { if (roomTeams) renderTeams(); };
 // Pick up teams that other players claim while this page is open.
@@ -62,6 +73,7 @@ $('#f').onsubmit = async (e) => {
   try {
     const r = await api('/api/player/join', { method: 'POST', body: { name: $('#name').value, team: $('#team').value, code: $('#code').value } });
     localStorage.setItem('xw_player', JSON.stringify(r));
+    localStorage.setItem('xw_last', JSON.stringify({ name: r.name, code: r.code }));
     location.href = 'play.html';
   } catch (x) { $('#err').textContent = x.message; lastCode = ''; loadTeams(); }
 };

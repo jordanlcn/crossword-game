@@ -12,6 +12,7 @@
 <div class="layout">
   <div class="gridwrap"><div id="zoom"></div><div class="gridscroll" id="scroll"><div id="grid"></div></div></div>
   <div class="side">
+    <div id="net" hidden style="background:#D93025;color:#fff;border-radius:12px;padding:.6rem .9rem;font-weight:700">Connection lost. Reconnecting…</div>
     <div class="curclue" id="cur">Click a square to begin.</div>
     <div class="panel clues" id="clues"></div>
   </div>
@@ -144,5 +145,5 @@ function finish() {
   $('#cur').textContent = 'The Game Master has ended the game. Loading results…';
   setTimeout(() => { location.href = 'results.html?code=' + me.code; }, 1200);
 }
-conn = connect('token=' + me.token, onMsg, () => { localStorage.removeItem('xw_player'); location.href = 'index.html'; });
+conn = connect('token=' + me.token, onMsg, () => { localStorage.removeItem('xw_player'); location.href = 'index.html'; }, (up) => { $('#net').hidden = up; });
 </script></body></html>
