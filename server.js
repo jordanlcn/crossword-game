@@ -130,6 +130,14 @@ app.post('/api/staff/login', (req, res) => {
   res.json({ token, role, name: nm });
 });
 
+// Which teams already have a player in this room (used by the player login to cross them out).
+app.get('/api/rooms/:code/teams', (req, res) => {
+  const room = db.rooms[req.params.code];
+  if (!room) return res.status(404).json({ error: 'Room code not found.' });
+  if (room.status === 'ended') return res.status(410).json({ error: 'This game has already ended.' });
+  res.json(TEAMS.map((T) => ({ ...T, player: room.teams[T.name] ? room.teams[T.name].player : null })));
+});
+
 app.post('/api/player/join', (req, res) => {
   const name = String(req.body.name || '').trim().slice(0, 30);
   const teamName = String(req.body.team || '');

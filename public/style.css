@@ -33,7 +33,7 @@ label{display:block;font-weight:700;margin:.9rem 0 .25rem;font-size:.85rem;color
 .cell .n{position:absolute;top:1px;left:2px;font-size:calc(var(--cell)*.28);font-weight:500;color:var(--slate);line-height:1}
 .cell.hl{background:var(--hl)}.cell.cur{background:var(--cur);color:#fff}.cell.cur .n{color:#fff}
 .cell.solved{background:var(--blue);color:#fff;border-color:var(--navy)}.cell.solved .n{color:#DBE2F1}.cell.solved.cur{background:var(--navy)}
-.cell.wrong{background:#fbd5d5!important;color:var(--bad);animation:shake .35s}
+.cell.wrong{background:#D93025!important;color:#fff!important;border-color:#8E1B14;animation:shake .35s}
 .cell.ro{cursor:default}
 @keyframes shake{25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}
 .side{width:340px;flex:none;display:flex;flex-direction:column;gap:1rem;position:sticky;top:76px;max-height:calc(100vh - 90px);overflow:auto}

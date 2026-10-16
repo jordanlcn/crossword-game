@@ -3,24 +3,66 @@
 <title>Tamtech WEM Crossword</title><link rel="stylesheet" href="style.css"></head>
 <body><div class="center"><form class="card" id="f">
   <img class="logo" src="five9-logo-blue.svg" alt="Five9"><div class="eyebrow">Tamtech WEM</div><h1>Crossword challenge</h1>
-  <p class="muted">Enter your details and the 6-digit room code from your Game Master.</p>
+  <p class="muted">Enter your name and the 6-digit room code from your Game Master, then pick your team.</p>
   <label for="name">Player name</label><input id="name" maxlength="30" required autocomplete="off">
-  <label for="team">Team</label><select id="team" required><option value="">Select your team…</option></select>
   <label for="code">Game room code</label><input id="code" inputmode="numeric" pattern="\d{6}" maxlength="6" placeholder="6 digits" required autocomplete="off">
+  <label for="team">Team</label><select id="team" required disabled><option value="">Enter the room code first…</option></select>
   <div class="err" id="err"></div>
   <button style="width:100%;margin-top:.4rem">Join game</button>
   <a class="link" href="staff.html">Game Master / Overseer login</a>
 <div class="themeline">Smarter CX <span>with every interaction</span></div></form></div>
 <script src="common.js"></script>
 <script>
-api('/api/teams').then((ts) => ts.forEach((t) => $('#team').append(el('option', { value: t.name, textContent: t.label }))));
-$('#code').oninput = (e) => { e.target.value = e.target.value.replace(/\D/g, ''); };
+let roomTeams = null, lastCode = '';
+const strike = (s) => [...s].map((c) => (c === ' ' ? c : c + '̶')).join('');
+
+function renderTeams() {
+  const sel = $('#team'), keep = sel.value, me = $('#name').value.trim().toLowerCase();
+  sel.innerHTML = '';
+  if (!roomTeams) {
+    sel.append(el('option', { value: '', textContent: 'Enter the room code first…' }));
+    sel.disabled = true; return;
+  }
+  sel.disabled = false;
+  sel.append(el('option', { value: '', textContent: 'Select your team…' }));
+  roomTeams.forEach((t) => {
+    const mine = t.player && t.player.toLowerCase() === me; // same player coming back can resume
+    const taken = t.player && !mine;
+    sel.append(el('option', {
+      value: t.name, disabled: !!taken,
+      textContent: taken ? `${strike(t.label)}  —  ${t.player}` : mine ? `${t.label}  (you)` : t.label,
+    }));
+  });
+  if ([...sel.options].some((o) => o.value === keep && !o.disabled)) sel.value = keep;
+}
+
+async function loadTeams() {
+  const code = $('#code').value;
+  if (code === lastCode) return;
+  lastCode = code; $('#err').textContent = '';
+  if (code.length !== 6) { roomTeams = null; return renderTeams(); }
+  try { roomTeams = await api(`/api/rooms/${code}/teams`); }
+  catch (x) { roomTeams = null; if (code === $('#code').value) $('#err').textContent = x.message; }
+  renderTeams();
+}
+$('#code').oninput = (e) => { e.target.value = e.target.value.replace(/\D/g, ''); loadTeams(); };
+$('#name').oninput = () => { if (roomTeams) renderTeams(); };
+// Pick up teams that other players claim while this page is open.
+setInterval(async () => {
+  const code = $('#code').value;
+  if (code.length !== 6 || !roomTeams) return;
+  try {
+    const fresh = await api(`/api/rooms/${code}/teams`);
+    if (JSON.stringify(fresh) !== JSON.stringify(roomTeams)) { roomTeams = fresh; renderTeams(); }
+  } catch { /* ignore */ }
+}, 4000);
+
 $('#f').onsubmit = async (e) => {
   e.preventDefault(); $('#err').textContent = '';
   try {
     const r = await api('/api/player/join', { method: 'POST', body: { name: $('#name').value, team: $('#team').value, code: $('#code').value } });
     localStorage.setItem('xw_player', JSON.stringify(r));
     location.href = 'play.html';
-  } catch (x) { $('#err').textContent = x.message; }
+  } catch (x) { $('#err').textContent = x.message; lastCode = ''; loadTeams(); }
 };
 </script></body></html>
