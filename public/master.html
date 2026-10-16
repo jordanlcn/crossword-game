@@ -71,7 +71,7 @@ function renderScore() {
   $('#score').innerHTML = '';
   rows.forEach((t) => {
     const tr = el('tr');
-    const c1 = el('td'); c1.append(el('span', { className: 'pill ' + (t.online ? 'on' : 'off'), textContent: t.online ? 'on' : 'off' }), ' ', t.team);
+    const c1 = el('td'); c1.append(el('span', { className: 'pill ' + (t.joined && t.online ? 'on' : 'off'), textContent: !t.joined ? 'Not joined' : t.online ? 'Online' : 'Offline' }), ' ', t.team);
     tr.append(c1, el('td', { textContent: t.joined ? t.player : '—' }), el('td', { textContent: t.joined ? t.score : 0 }),
       el('td', { textContent: t.joined && t.startedAt && t.lastCorrectAt ? fmtMs(t.lastCorrectAt - t.startedAt) : '-' }));
     $('#score').append(tr);

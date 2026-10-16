@@ -9,11 +9,11 @@
   <p class="muted" id="none" hidden>No active rooms right now.</p></div></div>
 
 <div id="teams" class="wrap" hidden><button class="sec" id="b1">← Rooms</button><h2 style="margin-top:1rem">Select a team to oversee</h2>
-  <div class="panel"><table><thead><tr><th>Team</th><th>Player</th><th>Score</th><th></th></tr></thead><tbody id="tb"></tbody></table></div></div>
+  <div class="panel"><table><thead><tr><th>Team</th><th>Player</th><th>Status</th><th>Score</th><th></th></tr></thead><tbody id="tb"></tbody></table></div></div>
 
 <div id="view" hidden>
   <div class="wrap" style="padding-bottom:0"><div class="row"><button class="sec" id="b2">← Teams</button>
-    <b id="vteam"></b><span class="muted" id="vinfo"></span><span class="pill on">Read-only</span></div></div>
+    <b id="vteam"></b><span class="muted" id="vinfo"></span><span class="pill on" id="vstat">Online</span><span class="pill off">Read-only</span></div></div>
   <div class="layout">
     <div class="gridwrap"><div id="zoom"></div><div class="gridscroll"><div id="grid"></div></div></div>
     <div class="side">
@@ -56,6 +56,7 @@ function renderTeams() {
   $('#tb').innerHTML = '';
   Object.values(teams).forEach((t) => $('#tb').append(el('tr', {},
     el('td', { textContent: t.team }), el('td', { textContent: t.joined ? t.player : 'Not joined' }),
+    el('td', {}, el('span', { className: 'pill ' + (t.joined && t.online ? 'on' : 'off'), textContent: !t.joined ? '—' : t.online ? 'Online' : 'Offline' })),
     el('td', { textContent: t.joined ? `${t.score}` : '-' }),
     el('td', {}, el('button', { textContent: 'Oversee', disabled: !t.joined, onclick: () => oversee(t.team) })))));
 }
@@ -67,7 +68,7 @@ function oversee(name) {
   for (const [k, ch] of Object.entries(t.cells || {})) grid.setLetter(k, ch);
   (t.solved || []).forEach((id) => { grid.markSolved(id); clues.done(id); });
 }
-function updateInfo() { const t = teams[team]; if (t) $('#vinfo').textContent = `Player: ${t.player} • Score ${t.score}/${puzzle.entries.length} • ${t.online ? 'online' : 'offline'}`; }
+function updateInfo() { const t = teams[team]; if (t) { $('#vstat').textContent = t.online ? 'Online' : 'Offline'; $('#vstat').className = 'pill ' + (t.online ? 'on' : 'off'); } if (t) $('#vinfo').textContent = `Player: ${t.player} • Score ${t.score}/${puzzle.entries.length}`; }
 
 function showHints(text) {
   const box = $('#hints'); box.innerHTML = '';
