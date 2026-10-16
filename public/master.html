@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Game Master - Tamtech WEM Crossword</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<div class="topbar"><b>Game Master</b><span class="who" id="who"></span><div class="grow"></div>
+  <span id="roomtag"></span><button class="sec" id="out">Log out</button></div>
+
+<div id="lobby" class="wrap">
+  <div class="row" style="justify-content:space-between"><h2>Game rooms</h2><button id="new">+ Create new room</button></div>
+  <div class="panel"><table><thead><tr><th>Room code</th><th>Status</th><th>Created</th><th>Teams joined</th><th></th></tr></thead><tbody id="rooms"></tbody></table>
+  <p class="muted" id="none" hidden>No rooms yet. Create one and share the 6-digit code with your players.</p></div>
+</div>
+
+<div id="room" hidden>
+  <div class="wrap" style="padding-bottom:0">
+    <div class="row"><button class="sec" id="back">← All rooms</button>
+      <span>Room code <span class="big" id="code"></span></span><span class="pill" id="status"></span>
+      <span>Game time: <b id="gt" style="font-family:Consolas,monospace">00:00:00</b></span>
+      <div class="grow" style="flex:1"></div>
+      <button id="results" class="sec" hidden>View results</button><button id="dl" hidden>Download Excel</button>
+      <button class="danger" id="end">End game for everyone</button></div>
+  </div>
+  <div class="layout">
+    <div class="gridwrap"><div id="zoom"></div><div class="muted" style="margin-bottom:.3rem">Answer key (what players see, filled in)</div><div class="gridscroll"><div id="grid"></div></div></div>
+    <div class="side">
+      <div class="panel"><h3>Live scoring</h3><table><thead><tr><th>Team</th><th>Player</th><th>Pts</th><th>Last correct</th></tr></thead><tbody id="score"></tbody></table></div>
+      <div class="panel clues" id="clues"></div>
+    </div>
+  </div>
+</div>
+<script src="common.js"></script>
+<script>
+const me = JSON.parse(localStorage.getItem('xw_staff') || 'null');
+if (!me || me.role !== 'master') location.href = 'staff.html';
+$('#who').textContent = me.name;
+$('#out').onclick = () => logoutTo('staff.html', 'xw_staff');
+$('#zoom').append(zoomBar());
+let conn, teams = {}, room, puzzle, grid, clues, offset = 0, clock;
+
+async function loadRooms() {
+  const list = await api('/api/rooms', { token: me.token });
+  $('#rooms').innerHTML = ''; $('#none').hidden = list.length > 0;
+  list.forEach((r) => $('#rooms').append(el('tr', {},
+    el('td', { innerHTML: `<b style="font-family:Consolas,monospace;font-size:1.1rem">${r.code}</b>` }),
+    el('td', {}, el('span', { className: 'pill ' + r.status, textContent: r.status === 'open' ? 'Active' : 'Ended' })),
+    el('td', { textContent: new Date(r.createdAt).toLocaleString() }),
+    el('td', { textContent: `${r.teamsJoined}/8 (${r.teamsOnline} online)` }),
+    el('td', {}, el('button', { textContent: r.status === 'open' ? 'Enter room' : 'View', onclick: () => go(r.code) })))));
+}
+$('#new').onclick = async () => {
+  $('#new').disabled = true; $('#new').textContent = 'Generating puzzle…';
+  try { const r = await api('/api/rooms', { method: 'POST', token: me.token }); go(r.code); }
+  catch (e) { alert(e.message); }
+  $('#new').disabled = false; $('#new').textContent = '+ Create new room';
+};
+const go = (code) => { location.hash = '#/' + code; route(); };
+$('#back').onclick = () => { location.hash = ''; route(); };
+
+function route() {
+  if (conn) { conn.stop(); conn = null; }
+  clearInterval(clock);
+  const code = location.hash.replace('#/', '');
+  $('#lobby').hidden = !!code; $('#room').hidden = !code; $('#roomtag').textContent = '';
+  if (!code) return loadRooms();
+  teams = {};
+  conn = connect(`token=${me.token}&room=${code}`, onMsg, () => logoutTo('staff.html', 'xw_staff'));
+}
+
+function renderScore() {
+  const rows = Object.values(teams).sort((a, b) => (b.score || 0) - (a.score || 0) || (a.lastCorrectAt || Infinity) - (b.lastCorrectAt || Infinity));
+  $('#score').innerHTML = '';
+  rows.forEach((t) => {
+    const tr = el('tr');
+    const c1 = el('td'); c1.append(el('span', { className: 'pill ' + (t.online ? 'on' : 'off'), textContent: t.online ? 'on' : 'off' }), ' ', t.team);
+    tr.append(c1, el('td', { textContent: t.joined ? t.player : '—' }), el('td', { textContent: t.joined ? t.score : 0 }),
+      el('td', { textContent: t.joined && t.startedAt && t.lastCorrectAt ? fmtMs(t.lastCorrectAt - t.startedAt) : '-' }));
+    $('#score').append(tr);
+  });
+}
+function setStatus() {
+  $('#status').className = 'pill ' + room.status; $('#status').textContent = room.status === 'open' ? 'Active' : 'Ended';
+  $('#end').hidden = room.status !== 'open'; $('#dl').hidden = $('#results').hidden = room.status === 'open';
+}
+function onMsg(m) {
+  if (m.t === 'init') {
+    offset = m.serverNow - Date.now(); room = m.room; puzzle = m.puzzle;
+    $('#code').textContent = room.code; setStatus();
+    grid = buildGrid($('#grid'), puzzle, { readOnly: true });
+    clues = buildClues($('#clues'), puzzle, () => {});
+    puzzle.entries.forEach((e) => { entryCells(e).forEach((k, i) => grid.setLetter(k, e.answer[i])); clues.done(e.id, e.answer); });
+    grid.cells.forEach((c) => c.div.classList.add('solved'));
+    teams = {}; m.teams.forEach((t) => { teams[t.team] = t; });
+    renderScore();
+    clearInterval(clock);
+    clock = setInterval(() => {
+      $('#gt').textContent = fmtMs((room.endedAt || Date.now() + offset) - room.createdAt);
+    }, 500);
+  } else if (m.t === 'team') { teams[m.team] = { ...teams[m.team], ...m }; renderScore(); }
+  else if (m.t === 'solved') { Object.assign(teams[m.team], { score: m.score, lastCorrectAt: m.lastCorrectAt }); renderScore(); }
+  else if (m.t === 'ended') { room.status = 'ended'; room.endedAt = m.endedAt; setStatus(); }
+}
+
+function modal(html, buttons) {
+  const card = el('div', { className: 'card' });
+  card.innerHTML = html;
+  const row = el('div', { className: 'row' });
+  const m = el('div', { className: 'modal' }, card);
+  buttons.forEach(([label, cls, fn]) => row.append(el('button', { textContent: label, className: cls, onclick: () => fn(m, card) })));
+  card.append(row); document.body.append(m);
+  return m;
+}
+$('#end').onclick = () => {
+  modal('<h2>Are you sure?</h2><p>This will end the game for <b>all players</b>.</p>', [
+    ['No', 'sec', (m) => m.remove()],
+    ['Yes', 'danger', (m) => {
+      m.remove();
+      const m2 = modal('<h2>Terminating code</h2><p class="muted">Enter the code to end this room.</p><input id="tc" type="password" inputmode="numeric" autocomplete="off"><div class="err" id="terr"></div>', [
+        ['Cancel', 'sec', (x) => x.remove()],
+        ['End game', 'danger', async (x, card) => {
+          try { await api(`/api/rooms/${room.code}/end`, { method: 'POST', token: me.token, body: { terminationCode: $('#tc', card).value } }); x.remove(); }
+          catch (e) { $('#terr', card).textContent = e.message; }
+        }]]);
+      $('#tc', m2).focus();
+    }]]);
+};
+$('#results').onclick = () => { location.href = 'results.html?code=' + room.code; };
+$('#dl').onclick = async () => {
+  const res = await fetch(`/api/rooms/${room.code}/export`, { headers: { Authorization: 'Bearer ' + me.token } });
+  el('a', { href: URL.createObjectURL(await res.blob()), download: `crossword-room-${room.code}-results.xlsx` }).click();
+};
+window.onhashchange = route;
+route();
+</script></body></html>

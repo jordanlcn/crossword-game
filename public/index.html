@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tamtech WEM Crossword</title><link rel="stylesheet" href="style.css"></head>
+<body><div class="center"><form class="card" id="f">
+  <h1>Tamtech WEM Crossword</h1>
+  <p class="muted">Enter your details and the 6-digit room code from your Game Master.</p>
+  <label for="name">Player name</label><input id="name" maxlength="30" required autocomplete="off">
+  <label for="team">Team</label><select id="team" required><option value="">Select your team…</option></select>
+  <label for="code">Game room code</label><input id="code" inputmode="numeric" pattern="\d{6}" maxlength="6" placeholder="6 digits" required autocomplete="off">
+  <div class="err" id="err"></div>
+  <button style="width:100%;margin-top:.4rem">Join game</button>
+  <a class="link" href="staff.html">Game Master / Overseer login</a>
+</form></div>
+<script src="common.js"></script>
+<script>
+api('/api/teams').then((ts) => ts.forEach((t) => $('#team').append(el('option', { value: t.name, textContent: t.label }))));
+$('#code').oninput = (e) => { e.target.value = e.target.value.replace(/\D/g, ''); };
+$('#f').onsubmit = async (e) => {
+  e.preventDefault(); $('#err').textContent = '';
+  try {
+    const r = await api('/api/player/join', { method: 'POST', body: { name: $('#name').value, team: $('#team').value, code: $('#code').value } });
+    localStorage.setItem('xw_player', JSON.stringify(r));
+    location.href = 'play.html';
+  } catch (x) { $('#err').textContent = x.message; }
+};
+</script></body></html>

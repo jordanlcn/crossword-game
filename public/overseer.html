@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Overseer - Tamtech WEM Crossword</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<div class="topbar"><b>Overseer</b><span class="who" id="who"></span><div class="grow"></div><span id="crumb"></span><button class="sec" id="out">Log out</button></div>
+
+<div id="rooms" class="wrap"><h2>Active game rooms</h2>
+  <div class="panel"><table><thead><tr><th>Room code</th><th>Teams online</th><th></th></tr></thead><tbody id="rb"></tbody></table>
+  <p class="muted" id="none" hidden>No active rooms right now.</p></div></div>
+
+<div id="teams" class="wrap" hidden><button class="sec" id="b1">← Rooms</button><h2 style="margin-top:1rem">Select a team to oversee</h2>
+  <div class="panel"><table><thead><tr><th>Team</th><th>Player</th><th>Score</th><th></th></tr></thead><tbody id="tb"></tbody></table></div></div>
+
+<div id="view" hidden>
+  <div class="wrap" style="padding-bottom:0"><div class="row"><button class="sec" id="b2">← Teams</button>
+    <b id="vteam"></b><span class="muted" id="vinfo"></span><span class="pill on">Read-only</span></div></div>
+  <div class="layout">
+    <div class="gridwrap"><div id="zoom"></div><div class="gridscroll"><div id="grid"></div></div></div>
+    <div class="side">
+      <div class="panel"><h3>Hints</h3>
+        <div class="row"><input id="q" placeholder="Question number, e.g. 12 or 12A / 12D" style="flex:1"><button id="go">Show</button></div>
+        <div id="hints"></div></div>
+      <div class="panel clues" id="clues"></div>
+    </div>
+  </div>
+</div>
+<script src="common.js"></script>
+<script>
+const me = JSON.parse(localStorage.getItem('xw_staff') || 'null');
+if (!me || me.role !== 'overseer') location.href = 'staff.html';
+$('#who').textContent = me.name;
+$('#out').onclick = () => logoutTo('staff.html', 'xw_staff');
+$('#zoom').append(zoomBar());
+let conn, code, team, teams = {}, puzzle, grid, clues, solvedBy = {};
+const show = (id) => ['rooms', 'teams', 'view'].forEach((x) => { $('#' + x).hidden = x !== id; });
+
+async function loadRooms() {
+  show('rooms'); $('#crumb').textContent = '';
+  const list = await api('/api/rooms', { token: me.token });
+  $('#rb').innerHTML = ''; $('#none').hidden = list.length > 0;
+  list.forEach((r) => $('#rb').append(el('tr', {},
+    el('td', { innerHTML: `<b style="font-family:Consolas,monospace;font-size:1.1rem">${r.code}</b>` }),
+    el('td', { textContent: `${r.teamsOnline} online / ${r.teamsJoined} joined` }),
+    el('td', {}, el('button', { textContent: 'Select room', onclick: () => openRoom(r.code) })))));
+}
+function openRoom(c) {
+  code = c; team = null; teams = {};
+  if (conn) conn.stop();
+  conn = connect(`token=${me.token}&room=${code}`, onMsg, () => logoutTo('staff.html', 'xw_staff'));
+  show('teams'); $('#crumb').textContent = 'Room ' + code;
+}
+$('#b1').onclick = () => { if (conn) conn.stop(); conn = null; loadRooms(); };
+$('#b2').onclick = () => { team = null; show('teams'); renderTeams(); };
+
+function renderTeams() {
+  $('#tb').innerHTML = '';
+  Object.values(teams).forEach((t) => $('#tb').append(el('tr', {},
+    el('td', { textContent: t.team }), el('td', { textContent: t.joined ? t.player : 'Not joined' }),
+    el('td', { textContent: t.joined ? `${t.score}` : '-' }),
+    el('td', {}, el('button', { textContent: 'Oversee', disabled: !t.joined, onclick: () => oversee(t.team) })))));
+}
+function oversee(name) {
+  team = name; show('view');
+  const t = teams[name];
+  $('#vteam').textContent = name; updateInfo();
+  grid.clear(); clues.reset();
+  for (const [k, ch] of Object.entries(t.cells || {})) grid.setLetter(k, ch);
+  (t.solved || []).forEach((id) => { grid.markSolved(id); clues.done(id); });
+}
+function updateInfo() { const t = teams[team]; if (t) $('#vinfo').textContent = `Player: ${t.player} • Score ${t.score}/${puzzle.entries.length} • ${t.online ? 'online' : 'offline'}`; }
+
+function showHints(text) {
+  const box = $('#hints'); box.innerHTML = '';
+  const m = text.trim().toUpperCase().match(/^(\d+)\s*(A|D|ACROSS|DOWN)?$/);
+  if (!m) { box.append(el('p', { className: 'muted', textContent: 'Enter a clue number such as 7, 7A or 7 Down.' })); return; }
+  const found = puzzle.entries.filter((e) => e.num === +m[1] && (!m[2] || e.dir === m[2][0]));
+  if (!found.length) { box.append(el('p', { className: 'muted', textContent: 'No question with that number.' })); return; }
+  found.forEach((e) => {
+    box.append(el('div', { className: 'hint' },
+      el('div', { className: 'l', textContent: `${e.num} ${e.dir === 'A' ? 'Across' : 'Down'} • ${e.len} letters (${e.enum})` }),
+      el('div', {}, el('b', { textContent: 'Clue: ' }), e.clue),
+      el('div', {}, el('b', { textContent: 'Answer: ' }), e.answer)));
+    if (!e.hints.length) box.append(el('p', { className: 'muted', textContent: 'No additional hints for this word.' }));
+    e.hints.forEach((h) => box.append(el('div', { className: 'hint' }, el('div', { className: 'l', textContent: h.label }), el('div', { textContent: h.text }))));
+    grid.highlight(e.id);
+  });
+}
+$('#go').onclick = () => showHints($('#q').value);
+$('#q').onkeydown = (e) => { if (e.key === 'Enter') showHints($('#q').value); };
+
+function onMsg(m) {
+  if (m.t === 'init') {
+    puzzle = m.puzzle;
+    grid = buildGrid($('#grid'), puzzle, { readOnly: true });
+    clues = buildClues($('#clues'), puzzle, (id) => { const e = grid.byId.get(id); $('#q').value = e.num + e.dir; showHints($('#q').value); });
+    const keep = team;
+    teams = {}; m.teams.forEach((t) => { teams[t.team] = t; });
+    $('#clues').prepend(el('h3', { style: 'margin-top:0', textContent: 'Answer sheet' }));
+    puzzle.entries.forEach((e) => { clues.items.get(e.id).querySelector('.t').textContent = `${e.clue} → ${e.answer}`; });
+    if (keep) oversee(keep); else renderTeams();
+  } else if (m.t === 'team') {
+    teams[m.team] = { ...teams[m.team], ...m }; if (team === m.team) updateInfo(); else if (!team) renderTeams();
+  } else if (m.t === 'cell') {
+    teams[m.team].cells = teams[m.team].cells || {}; if (m.ch) teams[m.team].cells[m.k] = m.ch; else delete teams[m.team].cells[m.k];
+    if (team === m.team && !grid.isSolvedCell(m.k)) grid.setLetter(m.k, m.ch);
+  } else if (m.t === 'solved') {
+    const t = teams[m.team]; t.score = m.score; (t.solved = t.solved || []).push(m.id);
+    if (team === m.team) { const e = grid.byId.get(m.id); entryCells(e).forEach((k, i) => grid.setLetter(k, m.answer[i])); grid.markSolved(m.id); clues.done(m.id); updateInfo(); }
+    else if (!team) renderTeams();
+  } else if (m.t === 'ended') {
+    alert('The Game Master has ended this room.'); if (conn) conn.stop(); conn = null; loadRooms();
+  }
+}
+loadRooms();
+</script></body></html>

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Staff Login - Tamtech WEM Crossword</title><link rel="stylesheet" href="style.css"></head>
+<body><div class="center"><form class="card" id="f">
+  <h1>Staff login</h1>
+  <label for="role">Role</label>
+  <select id="role"><option value="master">Game Master</option><option value="overseer">Overseer</option></select>
+  <label for="name">Name</label><input id="name" maxlength="40" required autocomplete="off">
+  <label for="pw">Password</label><input id="pw" type="password" required>
+  <div class="err" id="err"></div>
+  <button style="width:100%;margin-top:.4rem">Log in</button>
+  <a class="link" href="index.html">Player login</a>
+</form></div>
+<script src="common.js"></script>
+<script>
+$('#f').onsubmit = async (e) => {
+  e.preventDefault(); $('#err').textContent = '';
+  try {
+    const r = await api('/api/staff/login', { method: 'POST', body: { role: $('#role').value, name: $('#name').value, password: $('#pw').value } });
+    localStorage.setItem('xw_staff', JSON.stringify(r));
+    location.href = r.role === 'master' ? 'master.html' : 'overseer.html';
+  } catch (x) { $('#err').textContent = x.message; }
+};
+</script></body></html>

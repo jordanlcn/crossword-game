@@ -1,0 +1,922 @@
+[
+ {
+  "word": "Forecasting",
+  "clue": "Predicts future contact volume and workload using historical data.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Both"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Foundation for staffing and scheduling decisions."
+   },
+   {
+    "label": "Formula / KPI / Benchmark",
+    "text": "Schedule Efficiency = Scheduled Hours / Required Hours. Target: 95-105%"
+   }
+  ]
+ },
+ {
+  "word": "Scheduling",
+  "clue": "Creates agent schedules aligned to forecasted demand.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Both"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Balances service goals, labor costs, and employee preferences."
+   },
+   {
+    "label": "Formula / KPI / Benchmark",
+    "text": "Adherence % = Time in Adherence / Scheduled Time. Benchmark: 90-95%+"
+   }
+  ]
+ },
+ {
+  "word": "Adherence",
+  "clue": "Measures how closely agents follow published schedules.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Both"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Can be tracked in real time or historically."
+   },
+   {
+    "label": "Formula / KPI / Benchmark",
+    "text": "Intraday variance <5% from forecast is desirable."
+   }
+  ]
+ },
+ {
+  "word": "Intraday Management",
+  "clue": "Monitors daily performance against forecast and schedule.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Both"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Allows real-time staffing adjustments."
+   },
+   {
+    "label": "Formula / KPI / Benchmark",
+    "text": "Shrinkage % = Unavailable Time / Paid Time. Benchmark: 25-35%"
+   }
+  ]
+ },
+ {
+  "word": "Shrinkage",
+  "clue": "Time agents are unavailable for customer interactions.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Both"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Includes breaks, training, meetings, PTO, and absenteeism."
+   },
+   {
+    "label": "Formula / KPI / Benchmark",
+    "text": "Service Level = % answered within target. Benchmark: 80/20 or 80/30"
+   }
+  ]
+ },
+ {
+  "word": "Service Level",
+  "clue": "Target percentage of contacts answered within a defined time.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Both"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Key measure of customer experience performance."
+   },
+   {
+    "label": "Formula / KPI / Benchmark",
+    "text": "ASA = Total Wait Time / Calls Answered. Benchmark: <20-30 sec"
+   }
+  ]
+ },
+ {
+  "word": "Average Speed of Answer",
+  "clue": "Average time customers wait before an agent answers.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Both"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Frequently used in service-level management."
+   },
+   {
+    "label": "Formula / KPI / Benchmark",
+    "text": "Staffing based on Erlang and forecast workload."
+   }
+  ]
+ },
+ {
+  "word": "Staffing Requirements",
+  "clue": "Number of agents required to meet workload demand.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Both"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Calculated from forecasts, AHT, and service goals."
+   },
+   {
+    "label": "Formula / KPI / Benchmark",
+    "text": "Occupancy % = Handle Time / Logged-in Available Time. Benchmark: 75-85%"
+   }
+  ]
+ },
+ {
+  "word": "Occupancy",
+  "clue": "Percentage of logged-in time agents spend handling work.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Both"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Used to balance efficiency and agent wellbeing."
+   },
+   {
+    "label": "Formula / KPI / Benchmark",
+    "text": "AHT = Talk + Hold + ACW. Benchmark varies, often 4-8 min."
+   }
+  ]
+ },
+ {
+  "word": "AHT",
+  "clue": "Average duration of customer interactions plus related work.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Both"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Major input to forecasting and workforce planning."
+   },
+   {
+    "label": "Formula / KPI / Benchmark",
+    "text": "Multi-skill utilization and staffing optimization metrics."
+   }
+  ]
+ },
+ {
+  "word": "Multi-Skill Scheduling",
+  "clue": "Schedules agents based on multiple skills and queues.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Both"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Improves resource utilization."
+   }
+  ]
+ },
+ {
+  "word": "Work Rules",
+  "clue": "Business rules governing schedules and labor constraints.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Verint"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Include shifts, hour limits, breaks, and policies."
+   }
+  ]
+ },
+ {
+  "word": "Schedule Bid",
+  "clue": "Allows agents to bid for preferred schedules.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Five9"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Improves employee engagement and flexibility."
+   }
+  ]
+ },
+ {
+  "word": "Time Off Management",
+  "clue": "Process for requesting and approving leave.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Both"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Integrated into staffing and schedule planning."
+   },
+   {
+    "label": "Formula / KPI / Benchmark",
+    "text": "Forecast Accuracy = Forecast / Actual. Benchmark: 90-95%+"
+   }
+  ]
+ },
+ {
+  "word": "Forecast Accuracy",
+  "clue": "Process for requesting and approving leave.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Both"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Used to improve planning quality."
+   },
+   {
+    "label": "Formula / KPI / Benchmark",
+    "text": "Real-Time Adherence Benchmark: 90-95%+"
+   }
+  ]
+ },
+ {
+  "word": "Real-Time Adherence",
+  "clue": "Live monitoring of adherence to schedules.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Both"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Enables quick corrective actions."
+   }
+  ]
+ },
+ {
+  "word": "Work Queue",
+  "clue": "Workload grouping used for forecasting and scheduling.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Verint"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Represents queues or interaction types."
+   },
+   {
+    "label": "Formula / KPI / Benchmark",
+    "text": "Common goals: 80/20 SL, ASA <30 sec, Abandonment <5%."
+   }
+  ]
+ },
+ {
+  "word": "Service Goals",
+  "clue": "Targets such as service level, ASA, or deadlines.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Verint"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Used by scheduling engines during optimization."
+   }
+  ]
+ },
+ {
+  "word": "Agent Self-Service Portal",
+  "clue": "Allows agents to view schedules and request changes.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Five9"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Supports engagement and schedule flexibility."
+   }
+  ]
+ },
+ {
+  "word": "Cross-Training",
+  "clue": "Enables agents to handle multiple skills or queues.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Both"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Increases staffing flexibility and resilience."
+   }
+  ]
+ },
+ {
+  "word": "Evaluation Form",
+  "clue": "Structured form containing sections and questions used to evaluate interactions.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Five9 QM"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Used to score agent performance and compliance."
+   }
+  ]
+ },
+ {
+  "word": "Coaching",
+  "clue": "Process for improving agent performance based on evaluation results.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Five9 QM"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Supports targeted development plans."
+   }
+  ]
+ },
+ {
+  "word": "Calibration",
+  "clue": "Task used to align evaluators on scoring standards.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Five9 QM"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Improves scoring consistency across reviewers."
+   }
+  ]
+ },
+ {
+  "word": "Benchmark",
+  "clue": "Configured performance target used for comparison.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Five9 QM"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Helps measure agents against expected standards."
+   }
+  ]
+ },
+ {
+  "word": "Alert",
+  "clue": "Notification triggered when defined conditions are met.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Five9 QM"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Draws attention to quality or risk events."
+   }
+  ]
+ },
+ {
+  "word": "Dispute",
+  "clue": "Mechanism allowing agents to challenge evaluation results.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Five9 QM"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Supports review and resolution workflows."
+   }
+  ]
+ },
+ {
+  "word": "Risk Rule",
+  "clue": "Rule designed to identify compliance or quality risks.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Five9 QM"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Can trigger monitoring or coaching actions."
+   }
+  ]
+ },
+ {
+  "word": "Assessment",
+  "clue": "Evaluation process applied to an interaction.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Five9 QM"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Produces quality insights and scores."
+   }
+  ]
+ },
+ {
+  "word": "Interaction Review",
+  "clue": "Review of recorded interactions and related metadata.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Five9 QM"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Used for quality assurance and coaching."
+   }
+  ]
+ },
+ {
+  "word": "Quality Score",
+  "clue": "Overall result of an interaction evaluation.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Five9 QM"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Measures performance against form criteria."
+   },
+   {
+    "label": "Formula / KPI / Benchmark",
+    "text": "Score=(Points Earned/Points Possible)*100"
+   }
+  ]
+ },
+ {
+  "word": "Scorecard",
+  "clue": "Collection of evaluation criteria and performance measures.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Verint QM"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Used to assess agent effectiveness."
+   }
+  ]
+ },
+ {
+  "word": "Automated Evaluation",
+  "clue": "AI-powered scoring of interactions at scale.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Verint QM"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Expands coverage beyond manual reviews."
+   }
+  ]
+ },
+ {
+  "word": "Assessment",
+  "clue": "Formal review of an interaction against predefined criteria.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Verint QM"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Supports quality and compliance programs."
+   }
+  ]
+ },
+ {
+  "word": "Evaluator",
+  "clue": "Person or system performing the quality assessment.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Verint QM"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Applies scoring standards."
+   }
+  ]
+ },
+ {
+  "word": "KPI",
+  "clue": "Key performance indicator used to measure outcomes.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Verint QM"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Tracks operational and quality performance."
+   }
+  ]
+ },
+ {
+  "word": "Objective",
+  "clue": "Desired quality or business outcome.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Verint QM"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Guides evaluation criteria and coaching."
+   }
+  ]
+ },
+ {
+  "word": "Compliance Score",
+  "clue": "Score indicating adherence to required standards.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Verint QM"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Used in regulated environments."
+   },
+   {
+    "label": "Formula / KPI / Benchmark",
+    "text": "Compliance Passed Checks/Total Checks"
+   }
+  ]
+ },
+ {
+  "word": "Form Designer",
+  "clue": "Tool used to create evaluation forms.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Verint QM"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Defines sections, questions, and scoring."
+   }
+  ]
+ },
+ {
+  "word": "Calibration",
+  "clue": "Alignment process for evaluators.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Verint QM"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Improves scoring reliability."
+   }
+  ]
+ },
+ {
+  "word": "Performance Dashboard",
+  "clue": "Dashboard displaying quality trends and KPIs.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Verint QM"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Provides operational visibility."
+   }
+  ]
+ },
+ {
+  "word": "Transcription",
+  "clue": "Conversion of speech recordings into text.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Speech Analytics"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Enables search and analytics."
+   }
+  ]
+ },
+ {
+  "word": "Sentiment Analysis",
+  "clue": "Analysis of customer and agent sentiment in conversations.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Speech Analytics"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Identifies positive, neutral, or negative interactions."
+   }
+  ]
+ },
+ {
+  "word": "Category",
+  "clue": "Grouping of interactions based on common characteristics.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Speech Analytics"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Used for reporting and trend analysis."
+   }
+  ]
+ },
+ {
+  "word": "Theme",
+  "clue": "Recurring subject or topic identified in conversations.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Speech Analytics"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Helps uncover common customer concerns."
+   }
+  ]
+ },
+ {
+  "word": "Keyword",
+  "clue": "Specific words or phrases tracked across conversations.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Speech Analytics"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Supports compliance and trend monitoring."
+   }
+  ]
+ },
+ {
+  "word": "Silence Analysis",
+  "clue": "Measurement of silence periods during interactions.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Speech Analytics"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Helps identify inefficiencies or process issues."
+   },
+   {
+    "label": "Formula / KPI / Benchmark",
+    "text": "Silence Time/Call Duration"
+   }
+  ]
+ },
+ {
+  "word": "Talk-Listen Ratio",
+  "clue": "Comparison of agent versus customer talk time.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Speech Analytics"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Used to improve conversational balance."
+   },
+   {
+    "label": "Formula / KPI / Benchmark",
+    "text": "Agent Talk Time/Customer Talk Time"
+   }
+  ]
+ },
+ {
+  "word": "Compliance Detection",
+  "clue": "Automatic identification of required or prohibited language.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Speech Analytics"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Supports regulatory compliance."
+   },
+   {
+    "label": "Formula / KPI / Benchmark",
+    "text": "Compliance Matches/Interactions"
+   }
+  ]
+ },
+ {
+  "word": "Emotion Detection",
+  "clue": "Identification of emotional cues in speech patterns.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Speech Analytics"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Provides deeper customer experience insights."
+   }
+  ]
+ },
+ {
+  "word": "Root Cause Analysis",
+  "clue": "Analysis to determine underlying reasons for issues.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Speech Analytics"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Supports process improvement."
+   }
+  ]
+ },
+ {
+  "word": "Topic Detection",
+  "clue": "Automatic identification of discussion topics.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Interaction Analytics"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Helps understand customer needs at scale."
+   }
+  ]
+ },
+ {
+  "word": "Intent Analysis",
+  "clue": "Determines the purpose of a customer interaction.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Interaction Analytics"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Supports journey and workflow optimization."
+   }
+  ]
+ },
+ {
+  "word": "Trend Analysis",
+  "clue": "Tracks changes in topics and behaviors over time.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Interaction Analytics"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Identifies emerging issues and opportunities."
+   },
+   {
+    "label": "Formula / KPI / Benchmark",
+    "text": "Period over Period Change %"
+   }
+  ]
+ },
+ {
+  "word": "Customer Journey",
+  "clue": "Sequence of interactions across channels.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Interaction Analytics"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Provides end-to-end experience visibility."
+   }
+  ]
+ },
+ {
+  "word": "Contact Driver",
+  "clue": "Primary reason customers contact the organization.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Interaction Analytics"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Used to reduce avoidable demand."
+   }
+  ]
+ },
+ {
+  "word": "Omnichannel Analytics",
+  "clue": "Analysis across voice and digital channels.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Interaction Analytics"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Creates a unified customer view."
+   }
+  ]
+ },
+ {
+  "word": "Emerging Issues",
+  "clue": "New patterns or problems detected in interactions.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Interaction Analytics"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Supports proactive action."
+   }
+  ]
+ },
+ {
+  "word": "Natural Language Processing",
+  "clue": "Technology that analyzes human language.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Interaction Analytics"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Foundation for topic and intent analysis."
+   }
+  ]
+ },
+ {
+  "word": "Customer Sentiment",
+  "clue": "Aggregate measure of customer sentiment across interactions.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Interaction Analytics"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Tracks customer experience trends."
+   },
+   {
+    "label": "Formula / KPI / Benchmark",
+    "text": "Average Sentiment Score"
+   }
+  ]
+ },
+ {
+  "word": "Interaction Categorization",
+  "clue": "Automatic classification of interactions into categories.",
+  "hints": [
+   {
+    "label": "Verint or Five9 WFM",
+    "text": "Interaction Analytics"
+   },
+   {
+    "label": "Definition 2",
+    "text": "Improves reporting and operational insights."
+   }
+  ]
+ }
+]
