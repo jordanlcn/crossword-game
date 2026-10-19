@@ -38,7 +38,7 @@ label{display:block;font-weight:700;margin:.9rem 0 .25rem;font-size:.85rem;color
 @keyframes shake{25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}
 .side{width:340px;flex:none;display:flex;flex-direction:column;gap:1rem;position:sticky;top:76px;max-height:calc(100vh - 90px);overflow:auto}
 .panel{background:#fff;border-radius:12px;padding:.9rem;box-shadow:0 2px 12px rgba(25,42,82,.08)}
-.curclue{background:var(--navy);color:#fff;border-radius:12px;padding:.7rem .9rem;font-weight:500;min-height:3rem}
+.curclue{background:var(--navy);color:#fff;border-radius:12px;padding:.7rem .9rem;font-weight:500;line-height:1.4;min-height:calc(3 * 1.4em + 1.4rem)}
 .clues h3{font-size:.78rem;text-transform:uppercase;letter-spacing:.18em;color:var(--blue);border-bottom:1px solid var(--line);padding-bottom:.3rem;margin-top:.7rem}
 .clue{padding:.35rem .45rem;border-radius:8px;cursor:pointer;font-size:.88rem;display:flex;gap:.4rem}
 .clue:hover{background:var(--s300)}.clue.active{background:var(--hl)}.clue.done{color:var(--slate)}.clue.done .t{text-decoration:line-through}
