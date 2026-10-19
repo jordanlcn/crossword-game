@@ -121,7 +121,7 @@ function buildClues(container, puzzle, onPick) {
   }
   return {
     items,
-    active(id) { items.forEach((r, k) => r.classList.toggle('active', k === id)); if (items.get(id)) items.get(id).scrollIntoView({ block: 'nearest' }); },
+    active(id) { items.forEach((r, k) => r.classList.toggle('active', k === id)); },
     done(id, answer) {
       const r = items.get(id); r.classList.add('done');
       if (answer && !r.querySelector('.a')) r.append(el('span', { className: 'a', textContent: '✓ ' + answer }));
