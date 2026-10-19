@@ -6,7 +6,9 @@ const fs = require('fs');
 const crypto = require('crypto');
 const { WebSocketServer } = require('ws');
 const ExcelJS = require('exceljs');
+const JSZip = require('jszip');
 const { generate, norm } = require('./puzzle');
+const { boardWebp, slug } = require('./boards');
 
 const PORT = process.env.PORT || 3000;
 const MASTER_PW = process.env.MASTER_PASSWORD || 'Five9';
@@ -14,6 +16,7 @@ const OVERSEER_PW = process.env.OVERSEER_PASSWORD || 'Five9OS';
 const END_CODE = process.env.TERMINATION_CODE || '5959';
 const DATA_FILE = path.join(process.env.DATA_DIR || path.join(__dirname, 'data'), 'state.json');
 const WORDS = require('./words.json');
+const BOARD_DIR = path.join(path.dirname(DATA_FILE), 'boards');
 
 const TEAMS = [
   { name: 'Tenacious Tamaraws', lead: 'Team Jeff' },
@@ -201,6 +204,7 @@ app.post('/api/rooms/:code/end', needStaff('master'), (req, res) => {
     room.endedAt = Date.now();
     save();
     toAll(room.code, { t: 'ended', endedAt: room.endedAt });
+    saveBoards(room).catch((e) => console.error('saving boards failed', e.message));
   }
   res.json(roomInfo(room));
 });
@@ -212,6 +216,37 @@ app.get('/api/rooms/:code/results', (req, res) => {
   if (a.role === 'player' && a.room !== room.code) return res.status(403).json({ error: 'Not your room' });
   if (a.role === 'player' && room.status !== 'ended') return res.status(403).json({ error: 'The game is still running.' });
   res.json({ ...results(room), me: a.role === 'player' ? a.team : null });
+});
+
+// ----- board images (WebP) -----
+async function saveBoards(room) {
+  const dir = path.join(BOARD_DIR, room.code);
+  fs.mkdirSync(dir, { recursive: true });
+  for (const T of TEAMS) {
+    if (!room.teams[T.name]) continue;
+    fs.writeFileSync(path.join(dir, slug(T.name) + '.webp'), await boardWebp(room, T.name, T.label));
+  }
+}
+// Final saved image if the game has ended (and it exists), otherwise rendered fresh from current state.
+async function teamBoard(room, T) {
+  const f = path.join(BOARD_DIR, room.code, slug(T.name) + '.webp');
+  if (room.status === 'ended' && fs.existsSync(f)) return fs.readFileSync(f);
+  return boardWebp(room, T.name, T.label);
+}
+app.get('/api/rooms/:code/boards/:team.webp', needStaff(), async (req, res) => {
+  const room = db.rooms[req.params.code];
+  const T = TEAMS.find((x) => slug(x.name) === req.params.team);
+  if (!room || !T || !room.teams[T.name]) return res.status(404).json({ error: 'Board not found' });
+  res.type('image/webp').set('Content-Disposition', 'attachment; filename="' + room.code + '-' + slug(T.name) + '.webp"').send(await teamBoard(room, T));
+});
+app.get('/api/rooms/:code/boards.zip', needStaff('master'), async (req, res) => {
+  const room = db.rooms[req.params.code];
+  if (!room) return res.status(404).json({ error: 'Room not found' });
+  const zip = new JSZip();
+  for (const T of TEAMS) if (room.teams[T.name]) zip.file(slug(T.name) + '.webp', await teamBoard(room, T));
+  if (!Object.keys(zip.files).length) return res.status(404).json({ error: 'No teams joined this room.' });
+  res.type('application/zip').set('Content-Disposition', 'attachment; filename="crossword-room-' + room.code + '-boards.zip"')
+    .send(await zip.generateAsync({ type: 'nodebuffer' }));
 });
 
 app.get('/api/rooms/:code/export', needStaff('master'), async (req, res) => {

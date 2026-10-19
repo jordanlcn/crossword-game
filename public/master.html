@@ -17,7 +17,7 @@
       <span>Room code <span class="big" id="code"></span></span><span class="pill" id="status"></span>
       <span>Game time: <b id="gt">00:00:00</b></span>
       <div class="grow" style="flex:1"></div>
-      <button id="results" class="sec" hidden>View results</button><button id="dl" hidden>Download Excel</button>
+      <button id="results" class="sec" hidden>View results</button><button id="dl" hidden>Download Excel</button><button id="zip" class="sec" hidden>Download boards (ZIP)</button>
       <button class="danger" id="end">End game for everyone</button></div>
   </div>
   <div class="layout">
@@ -79,7 +79,7 @@ function renderScore() {
 }
 function setStatus() {
   $('#status').className = 'pill ' + room.status; $('#status').textContent = room.status === 'open' ? 'Active' : 'Ended';
-  $('#end').hidden = room.status !== 'open'; $('#dl').hidden = $('#results').hidden = room.status === 'open';
+  $('#end').hidden = room.status !== 'open'; $('#dl').hidden = $('#results').hidden = $('#zip').hidden = room.status === 'open';
 }
 function onMsg(m) {
   if (m.t === 'init') {
@@ -128,6 +128,7 @@ $('#dl').onclick = async () => {
   const res = await fetch(`/api/rooms/${room.code}/export`, { headers: { Authorization: 'Bearer ' + me.token } });
   el('a', { href: URL.createObjectURL(await res.blob()), download: `crossword-room-${room.code}-results.xlsx` }).click();
 };
+$('#zip').onclick = () => downloadFile(`/api/rooms/${room.code}/boards.zip`, `crossword-room-${room.code}-boards.zip`, me.token).catch((e) => alert(e.message));
 window.onhashchange = route;
 route();
 </script></body></html>

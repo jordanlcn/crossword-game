@@ -130,4 +130,13 @@ function buildClues(container, puzzle, onPick) {
   };
 }
 
+// Authenticated file download (the token travels in a header, not the URL).
+async function downloadFile(path, filename, token) {
+  const res = await fetch(path, { headers: { Authorization: 'Bearer ' + token } });
+  if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.error || 'Download failed'); }
+  const a = el('a', { href: URL.createObjectURL(await res.blob()), download: filename });
+  document.body.append(a); a.click(); a.remove();
+}
+const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
 function logoutTo(page, ...keys) { keys.forEach((k) => localStorage.removeItem(k)); location.href = page; }

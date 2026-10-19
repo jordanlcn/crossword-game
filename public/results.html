@@ -2,9 +2,9 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Results - Tamtech WEM Crossword</title><link rel="stylesheet" href="style.css"></head>
 <body><div class="center"><div class="card rankcard" id="c"><img class="logo" src="five9-logo-blue.svg" alt="Five9"><div class="eyebrow">Tamtech WEM Crossword</div><h1>Final results</h1><p class="muted" id="sub">Loading…</p>
-<table><thead><tr><th>#</th><th>Team</th><th>Player</th><th>Points</th><th>Time (last correct)</th></tr></thead><tbody id="rows"></tbody></table>
+<table><thead><tr><th>#</th><th>Team</th><th>Player</th><th>Points</th><th>Time (last correct)</th><th class="bcol" hidden>Board</th></tr></thead><tbody id="rows"></tbody></table>
 <p class="muted" id="total"></p>
-<div class="row" style="margin-top:1rem"><button id="dl" hidden>Download Excel</button><a class="link" id="back" href="index.html" style="margin:0 0 0 auto">Back to login</a></div>
+<div class="row" style="margin-top:1rem"><button id="dl" hidden>Download Excel</button><button id="zip" class="sec" hidden>Download boards (ZIP)</button><a class="link" id="back" href="index.html" style="margin:0 0 0 auto">Back to login</a></div>
 <div class="err" id="err"></div></div></div>
 <script src="common.js"></script>
 <script>
@@ -12,7 +12,7 @@ const code = new URLSearchParams(location.search).get('code');
 const staff = JSON.parse(localStorage.getItem('xw_staff') || 'null');
 const player = JSON.parse(localStorage.getItem('xw_player') || 'null');
 const token = (staff && staff.token) || (player && player.token);
-if (staff && staff.role === 'master') { $('#dl').hidden = false; $('#back').href = 'master.html'; $('#back').textContent = 'Back to rooms'; }
+if (staff && staff.role === 'master') { $('#dl').hidden = $('#zip').hidden = false; document.querySelector('.bcol').hidden = false; $('#back').href = 'master.html'; $('#back').textContent = 'Back to rooms'; }
 else if (staff) { $('#back').href = 'overseer.html'; $('#back').textContent = 'Back to rooms'; }
 (async () => {
   try {
@@ -21,7 +21,9 @@ else if (staff) { $('#back').href = 'overseer.html'; $('#back').textContent = 'B
     $('#total').textContent = `Total game time: ${fmtMs(r.totalGameMs)}`;
     r.rows.forEach((x) => $('#rows').append(el('tr', { className: x.team === r.me ? 'me' : '' },
       el('td', { textContent: x.rank }), el('td', { textContent: x.label }), el('td', { textContent: x.player || '—' }),
-      el('td', { textContent: x.points }), el('td', { textContent: fmtMs(x.timeMs) }))));
+      el('td', { textContent: x.points }), el('td', { textContent: fmtMs(x.timeMs) }),
+      ...(staff && staff.role === 'master' ? [el('td', {}, x.player ? el('a', { href: '#', textContent: 'WebP', onclick: (ev) => { ev.preventDefault(); downloadFile(`/api/rooms/${code}/boards/${slug(x.team)}.webp`, `${code}-${slug(x.team)}.webp`, token).catch((e) => alert(e.message)); } }) : '—')] : []))));
+    $('#zip').onclick = () => downloadFile(`/api/rooms/${code}/boards.zip`, `crossword-room-${code}-boards.zip`, token).catch((e) => alert(e.message));
     $('#dl').onclick = async () => {
       const res = await fetch(`/api/rooms/${code}/export`, { headers: { Authorization: 'Bearer ' + token } });
       const a = el('a', { href: URL.createObjectURL(await res.blob()), download: `crossword-room-${code}-results.xlsx` });
